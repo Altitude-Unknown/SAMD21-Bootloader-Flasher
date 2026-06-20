@@ -13,6 +13,12 @@ choices for:
 
 It can also browse for any `.bin` or `.hex` file.
 
+## User Manual
+
+See [USER_MANUAL.md](USER_MANUAL.md) for step-by-step flashing instructions,
+Atmel-ICE wiring notes, troubleshooting, and the matching Arduino board package
+install instructions.
+
 ## Requirements For Released Apps
 
 - Atmel-ICE programmer connected by USB
