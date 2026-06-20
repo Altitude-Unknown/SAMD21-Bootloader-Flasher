@@ -138,7 +138,13 @@ jobs:
         shell: pwsh
         run: |
           choco install openocd -y --no-progress
-          $openocd = Get-ChildItem -Path "C:\Program Files", "C:\tools" -Filter "openocd.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          $searchRoots = @(
+            "C:\ProgramData\chocolatey\lib\openocd\tools\install",
+            "C:\ProgramData\chocolatey\bin",
+            "C:\Program Files",
+            "C:\tools"
+          )
+          $openocd = Get-ChildItem -Path $searchRoots -Filter "openocd.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
           if (-not $openocd) {
             throw "Could not find openocd.exe after Chocolatey install."
           }
