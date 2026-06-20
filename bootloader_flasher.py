@@ -97,8 +97,6 @@ def build_openocd_command(
     flash_command = f"program {{{bootloader_file}}} 0x00000000"
     if verify:
         flash_command += " verify"
-    if reset_after:
-        flash_command += " reset"
 
     commands = [
         "init",
