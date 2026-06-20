@@ -1,0 +1,6 @@
+__pycache__/
+.pyinstaller-cache/
+build/
+dist/
+*.spec
+.DS_Store

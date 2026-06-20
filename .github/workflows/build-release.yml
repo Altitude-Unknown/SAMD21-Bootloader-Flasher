@@ -1,0 +1,168 @@
+name: Build desktop release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag
+        required: true
+        default: v0.1.0
+
+permissions:
+  contents: write
+
+env:
+  APP_NAME: Altitude SAMD21 Bootloader Flasher
+  SCRIPT_NAME: bootloader_flasher.py
+  MACOS_ARTIFACT_NAME: SAMD21BootloaderFlasher-macOS
+  MACOS_ZIP_NAME: SAMD21BootloaderFlasher-macOS.zip
+  WINDOWS_ARTIFACT_NAME: SAMD21BootloaderFlasher-Windows
+  WINDOWS_ZIP_NAME: SAMD21BootloaderFlasher-Windows.zip
+
+jobs:
+  build-macos:
+    name: Build signed/notarized macOS app
+    runs-on: macos-latest
+    environment: BOREALIS-Mac-OS
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+
+      - name: Import Apple Developer ID certificate
+        env:
+          MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+        run: |
+          if [ -z "$MACOS_CERTIFICATE_BASE64" ]; then
+            echo "No Developer ID certificate secret found; using ad-hoc signing."
+            exit 0
+          fi
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          CERTIFICATE_PATH="$RUNNER_TEMP/developer-id.p12"
+
+          echo "$MACOS_CERTIFICATE_BASE64" | base64 --decode > "$CERTIFICATE_PATH"
+          security create-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERTIFICATE_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          DETECTED_SIGNING_IDENTITY="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | awk '/Developer ID Application:/ {print $2; exit}')"
+          if [ -n "$DETECTED_SIGNING_IDENTITY" ]; then
+            echo "Found Developer ID Application signing identity hash."
+            echo "DETECTED_SIGNING_IDENTITY=$DETECTED_SIGNING_IDENTITY" >> "$GITHUB_ENV"
+            echo "SIGNING_KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          else
+            echo "No Developer ID Application signing identity was found in the imported certificate."
+          fi
+
+      - name: Build, sign, and notarize macOS app
+        env:
+          APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          pyinstaller \
+            --noconfirm \
+            --windowed \
+            --name "$APP_NAME" \
+            --add-data "assets:assets" \
+            "$SCRIPT_NAME"
+
+          if [ -n "$DETECTED_SIGNING_IDENTITY" ] && [ -n "$SIGNING_KEYCHAIN_PATH" ]; then
+            codesign --force --deep --options runtime --timestamp --keychain "$SIGNING_KEYCHAIN_PATH" --sign "$DETECTED_SIGNING_IDENTITY" "dist/$APP_NAME.app"
+          elif [ -n "$APPLE_DEVELOPER_ID_APPLICATION" ]; then
+            codesign --force --deep --options runtime --timestamp --sign "$APPLE_DEVELOPER_ID_APPLICATION" "dist/$APP_NAME.app"
+          else
+            echo "No Developer ID signing identity available; using ad-hoc signing."
+            codesign --force --deep --sign - "dist/$APP_NAME.app"
+          fi
+
+          codesign --verify --deep --strict --verbose=2 "dist/$APP_NAME.app"
+
+          if [ -n "$APPLE_ID" ] && [ -n "$APPLE_TEAM_ID" ] && [ -n "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
+            ditto -c -k --sequesterRsrc --keepParent "dist/$APP_NAME.app" "notary-submit-$MACOS_ARTIFACT_NAME.zip"
+            xcrun notarytool submit "notary-submit-$MACOS_ARTIFACT_NAME.zip" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait
+            xcrun stapler staple "dist/$APP_NAME.app"
+            xcrun stapler validate "dist/$APP_NAME.app"
+          else
+            echo "No notarization secrets found; skipping notarization."
+          fi
+
+          ditto -c -k --sequesterRsrc --keepParent "dist/$APP_NAME.app" "$MACOS_ZIP_NAME"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.MACOS_ARTIFACT_NAME }}
+          path: ${{ env.MACOS_ZIP_NAME }}
+
+  build-windows:
+    name: Build Windows executable
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+
+      - name: Build Windows exe
+        shell: pwsh
+        run: |
+          pyinstaller `
+            --noconfirm `
+            --onefile `
+            --windowed `
+            --name "SAMD21BootloaderFlasher" `
+            --add-data "assets;assets" `
+            bootloader_flasher.py
+          Compress-Archive -Path "dist/SAMD21BootloaderFlasher.exe" -DestinationPath "$env:WINDOWS_ZIP_NAME" -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.WINDOWS_ARTIFACT_NAME }}
+          path: ${{ env.WINDOWS_ZIP_NAME }}
+
+  release:
+    name: Publish GitHub release
+    runs-on: ubuntu-latest
+    needs:
+      - build-macos
+      - build-windows
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ inputs.tag }}" release-assets/*/*.zip \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "Altitude SAMD21 Bootloader Flasher ${{ inputs.tag }}" \
+            --notes "Desktop builds for the SAMD21 Bootloader Flasher app. OpenOCD is required separately unless bundled beside the app."
