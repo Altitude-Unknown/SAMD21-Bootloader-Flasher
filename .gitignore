@@ -1,5 +1,6 @@
 __pycache__/
 .pyinstaller-cache/
+assets/icons/AppIcon.iconset/
 build/
 dist/
 *.spec

@@ -142,9 +142,17 @@ class BootloaderFlasherApp(tk.Tk):
         self.protect_var = tk.BooleanVar(value=True)
         self.status_var = tk.StringVar(value="Choose a board and connect Atmel-ICE over SWD.")
 
+        self._app_icon: tk.PhotoImage | None = None
+        self._set_window_icon()
         self._build_ui()
         self._use_board_bootloader()
         self.after(100, self._poll_log_queue)
+
+    def _set_window_icon(self) -> None:
+        icon_path = bundled_asset("assets/icons/app_icon.png")
+        if icon_path.is_file():
+            self._app_icon = tk.PhotoImage(file=str(icon_path))
+            self.iconphoto(True, self._app_icon)
 
     def _build_ui(self) -> None:
         root = ttk.Frame(self, padding=14)

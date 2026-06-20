@@ -79,6 +79,7 @@ jobs:
             --noconfirm \
             --windowed \
             --name "$APP_NAME" \
+            --icon "assets/icons/app_icon.icns" \
             --add-data "assets:assets" \
             "$SCRIPT_NAME"
 
@@ -135,6 +136,7 @@ jobs:
             --onefile `
             --windowed `
             --name "SAMD21BootloaderFlasher" `
+            --icon "assets/icons/app_icon.ico" `
             --add-data "assets;assets" `
             bootloader_flasher.py
           Compress-Archive -Path "dist/SAMD21BootloaderFlasher.exe" -DestinationPath "$env:WINDOWS_ZIP_NAME" -Force
