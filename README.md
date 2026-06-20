@@ -13,11 +13,17 @@ choices for:
 
 It can also browse for any `.bin` or `.hex` file.
 
-## Requirements
+## Requirements For Released Apps
 
 - Atmel-ICE programmer connected by USB
 - Target SAMD21 board connected over SWD
-- OpenOCD installed or bundled beside the app
+
+The macOS and Windows release builds bundle OpenOCD inside the app package, so
+normal users should not need to install OpenOCD separately.
+
+## Run From Source
+
+Running from source still needs OpenOCD installed on the computer.
 
 On macOS with Homebrew:
 
@@ -28,11 +34,15 @@ brew install open-ocd
 The app also accepts an `OPENOCD_PATH` environment variable or lets you browse
 to the `openocd` executable manually.
 
-## Run From Source
-
 ```sh
 python3 bootloader_flasher.py
 ```
+
+## Build Notes
+
+The release workflow runs `scripts/vendor_openocd.py` before PyInstaller. That
+copies OpenOCD into `tools/openocd`, including the OpenOCD script/config files
+used by `interface/cmsis-dap.cfg` and `target/at91samdXX.cfg`.
 
 ## Flashing Notes
 

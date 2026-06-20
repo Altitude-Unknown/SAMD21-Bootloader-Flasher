@@ -85,6 +85,13 @@ def find_openocd() -> str | None:
     return shutil.which("openocd")
 
 
+def bundled_openocd_scripts() -> Path | None:
+    scripts_dir = app_root() / "tools" / "openocd" / "share" / "openocd" / "scripts"
+    if scripts_dir.is_dir():
+        return scripts_dir
+    return None
+
+
 def build_openocd_command(
     openocd_path: str,
     interface_cfg: str,
@@ -299,12 +306,17 @@ class BootloaderFlasherApp(tk.Tk):
     def _flash_worker(self, cmd: list[str]) -> None:
         try:
             self.log_queue.put("Running:\n" + " ".join(f'"{part}"' if " " in part else part for part in cmd) + "\n\n")
+            env = os.environ.copy()
+            scripts_dir = bundled_openocd_scripts()
+            if scripts_dir is not None:
+                env["OPENOCD_SCRIPTS"] = str(scripts_dir)
             self.process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
                 bufsize=1,
+                env=env,
             )
             assert self.process.stdout is not None
             for line in self.process.stdout:

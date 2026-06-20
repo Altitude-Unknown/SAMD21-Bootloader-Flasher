@@ -3,5 +3,6 @@ __pycache__/
 assets/icons/AppIcon.iconset/
 build/
 dist/
+tools/
 *.spec
 .DS_Store
