@@ -121,6 +121,22 @@ And these Arduino CLI FQBNs:
 - `AltitudeUnknown:samd:altitude_yellowstone_m0`
 - `AltitudeUnknown:samd:altitude_borealis_m0`
 
+### Before You Install: The SAMD Cores
+
+The Altitude Unknown package uses the compiler and upload tools from two
+standard board packages. Install them first. In Arduino IDE:
+
+1. Open `File > Preferences` (`Arduino IDE > Settings` on macOS) and add this
+   to `Additional boards manager URLs`:
+
+```text
+https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+```
+
+2. Open `Tools > Board > Boards Manager` and install:
+   - `Arduino SAMD Boards (32-bits ARM Cortex-M0+)` (tested with 1.8.13)
+   - `Adafruit SAMD Boards` version `1.7.10`
+
 ### macOS Install
 
 1. Download the board package from GitHub:
@@ -147,29 +163,22 @@ And these Arduino CLI FQBNs:
 2. Click `Code`.
 3. Click `Download ZIP`.
 4. Unzip the folder.
-5. Open your Arduino sketchbook folder, usually:
+5. Double-click `install_windows.bat` in the unzipped
+   `Arduino-Altitude-SAMD` folder. It copies the boards into:
 
-```text
-Documents\Arduino
-```
+   ```text
+   Documents\Arduino\hardware\AltitudeUnknown\samd
+   ```
 
-6. Create this folder path if it does not already exist:
-
-```text
-Documents\Arduino\hardware\AltitudeUnknown
-```
-
-7. Copy the unzipped package's `samd` folder into that location, so the final
-   path is:
-
-```text
-Documents\Arduino\hardware\AltitudeUnknown\samd
-```
-
-8. Restart Arduino IDE.
-9. In Arduino IDE, choose:
+   or into the sketchbook folder set in Arduino IDE, if you changed it. If it
+   lists a missing SAMD core, install it as described above.
+6. Restart Arduino IDE.
+7. In Arduino IDE, choose:
 
 `Tools > Board > Altitude Unknown SAMD Boards`
+
+To update the package later, download the ZIP again and rerun
+`install_windows.bat`; it replaces the old copy.
 
 ## Upload A Sketch In Arduino IDE
 
@@ -214,6 +223,13 @@ The bootloader name and Arduino sketch USB name are separate.
 Install the Altitude Unknown Arduino board package and compile/upload using the
 matching Altitude Unknown board entry. Once a sketch compiled for that board is
 running, the USB serial device should use the Altitude Unknown product name.
+
+### Compiling fails with a missing compiler, CMSIS, or bossac
+
+The SAMD cores are not installed. Install `Arduino SAMD Boards` and
+`Adafruit SAMD Boards` 1.7.10 as described in
+[Before You Install: The SAMD Cores](#before-you-install-the-samd-cores),
+then restart Arduino IDE.
 
 ### The board package does not appear in Arduino IDE
 
