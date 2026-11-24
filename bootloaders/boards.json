@@ -3,42 +3,46 @@
     {
       "id": "rc_tx",
       "name": "RC Airplane Transmitter",
-      "file": "bootloader-altitude_rc_tx_m0-v4.0.0.bin",
-      "sha256": "17f15c7b574f1c91897eeddb47a3faa25fccbfae31c676f8623830194182a5d0",
-      "version": "UF2 Bootloader v4.0.0",
+      "file": "bootloader-rc_tx-v1.0.0.bin",
+      "sha256": "bf34043fd7fb6e86ccc845faf8f3788638a7d2b1110766abeff88b29bb62f53a",
+      "version": "Altitude Bootloader 1.0.0",
       "board_id": "SAMD21G18A-Altitude-RC-TX-M0-v0",
       "usb_name": "RC Airplane TX M0",
-      "drive": "RCTXBOOT"
+      "drive": "RCTXBOOT",
+      "usb_id": "1209:A5C0"
     },
     {
       "id": "rc_rx",
       "name": "RC Airplane Receiver",
-      "file": "bootloader-altitude_rc_rx_m0-v4.0.0.bin",
-      "sha256": "bab6d8d31778a7cbdcb409042c1ff2d4b789663416d357b6dcd35a2667b945ba",
-      "version": "UF2 Bootloader v4.0.0",
+      "file": "bootloader-rc_rx-v1.0.0.bin",
+      "sha256": "f7b8e90829e00dc0c9db92fb4f9f8d9e40dc6254a0f145f0cf84aee947c0d8d2",
+      "version": "Altitude Bootloader 1.0.0",
       "board_id": "SAMD21G18A-Altitude-RC-RX-M0-v0",
       "usb_name": "RC Airplane RX M0",
-      "drive": "RCRXBOOT"
+      "drive": "RCRXBOOT",
+      "usb_id": "1209:A5C1"
     },
     {
       "id": "yellowstone",
       "name": "YELLOWSTONE",
-      "file": "bootloader-altitude_yellowstone_m0-v4.0.0.bin",
-      "sha256": "19ae222d5b2ad2de693f2f762a6575003a18d443efee1701f6638f0acff46825",
-      "version": "UF2 Bootloader v4.0.0",
+      "file": "bootloader-yellowstone-v1.0.0.bin",
+      "sha256": "a86abd075103e6dea961f21bf35a3d0049a4eaa72503a249c488c4f33d0dac12",
+      "version": "Altitude Bootloader 1.0.0",
       "board_id": "SAMD21G18A-Altitude-YELLOWSTONE-M0-v0",
       "usb_name": "YELLOWSTONE M0",
-      "drive": "YSTONEBOOT"
+      "drive": "YSTONEBOOT",
+      "usb_id": "1209:A5C2"
     },
     {
       "id": "borealis",
       "name": "BOREALIS",
-      "file": "bootloader-altitude_borealis_m0-v4.0.0.bin",
-      "sha256": "3bab342a091bac9eb4e6b5e8e312b6a042471a02f2049e3f4526cf7b3cd22080",
-      "version": "UF2 Bootloader v4.0.0",
+      "file": "bootloader-borealis-v1.0.0.bin",
+      "sha256": "e302fcc89dd8acaafa0b5276022b496dbdfccb0ed585728a9a0abb1d1ffa0518",
+      "version": "Altitude Bootloader 1.0.0",
       "board_id": "SAMD21G18A-Altitude-BOREALIS-M0-v0",
       "usb_name": "BOREALIS M0",
-      "drive": "BOREALBOOT"
+      "drive": "BOREALBOOT",
+      "usb_id": "03EB:2402 (lab placeholder)"
     }
   ]
 }

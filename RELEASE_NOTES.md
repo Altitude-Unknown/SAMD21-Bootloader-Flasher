@@ -4,6 +4,12 @@ smaller and there is nothing else to install.
 
 ## New
 
+- **New bootloaders.** The built-in bootloaders are the Altitude SAMD21
+  Bootloader 1.0.0, written from scratch for these boards. They work the same way
+  (Arduino uploads, double-tap reset, the UF2 drive), and the RC transmitter,
+  receiver and YELLOWSTONE now have their own USB IDs (1209:A5C0, A5C1, A5C2)
+  instead of lab placeholders. Update the Altitude Arduino board package at the
+  same time.
 - **Raspberry Pi** version (64-bit Raspberry Pi OS), with an installer that
   sets up USB access for the Atmel-ICE.
 - **Check Board** tells you which chip is connected, which bootloader is on it

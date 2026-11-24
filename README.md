@@ -41,8 +41,9 @@ python3 -m unittest discover -s tests  # tests with a simulated Atmel-ICE and SA
 
 ## Bootloader images
 
-The images in `bootloaders/` are built from the MIT-licensed
-[uf2-samdx1](https://github.com/adafruit/uf2-samdx1) UF2 bootloader with
-Altitude Unknown board definitions. Their license and notices are in that
-folder and must stay with them when they are shared. The app's own code does
-not use any of it.
+The images in `bootloaders/` are the
+[Altitude SAMD21 Bootloader](https://github.com/Altitude-Unknown/Altitude-SAMD21-Bootloader)
+1.0.0, also written from scratch for these boards (MIT). Like this app, it
+contains no code from other projects. The RC transmitter, RC receiver and
+YELLOWSTONE use USB IDs from [pid.codes](https://pid.codes) (1209:A5C0, A5C1,
+A5C2); BOREALIS still uses a lab placeholder.

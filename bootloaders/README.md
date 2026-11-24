@@ -4,10 +4,14 @@ The bootloader images this app installs, one per board, listed in
 `boards.json` with their SHA-256 checksums (the app refuses an image whose
 checksum does not match).
 
-They are built from Altitude Unknown board definitions in the
-[uf2-samdx1](https://github.com/adafruit/uf2-samdx1) UF2 bootloader source
-(`Bootloaders/uf2-samdx1` in the BOREALIS workspace). That source is MIT
-licensed: its license and third-party notices are in this folder and must be
-kept with the images when they are shared.
+They are the [Altitude SAMD21 Bootloader](https://github.com/Altitude-Unknown/Altitude-SAMD21-Bootloader)
+1.0.0, written from scratch for these boards (MIT license): Arduino uploads
+over USB serial and a UF2 drag-and-drop drive. Each image is padded to the full
+8 KB bootloader area so installing it also clears any older bootloader.
 
-The flasher app itself does not use any of that code.
+| Board | USB ID | Drive |
+| --- | --- | --- |
+| RC Airplane Transmitter | 1209:A5C0 | RCTXBOOT |
+| RC Airplane Receiver | 1209:A5C1 | RCRXBOOT |
+| YELLOWSTONE | 1209:A5C2 | YSTONEBOOT |
+| BOREALIS | 03EB:2402 (lab placeholder) | BOREALBOOT |

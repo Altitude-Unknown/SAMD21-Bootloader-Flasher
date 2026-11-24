@@ -30,6 +30,7 @@ class Board:
     board_id: str
     usb_name: str
     drive: str
+    usb_id: str = ""
 
     @property
     def path(self) -> Path:

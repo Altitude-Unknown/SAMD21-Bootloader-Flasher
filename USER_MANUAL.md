@@ -314,12 +314,14 @@ python3 bootloader_flasher.py read backup.bin
 SAMD21: `python3 -m unittest discover -s tests`.
 
 The bootloader images are in `bootloaders/`, listed in `bootloaders/boards.json`
-with SHA-256 checksums. They are built from the MIT-licensed uf2-samdx1 source;
-keep its license and notices (in `bootloaders/`) with them when sharing.
+with SHA-256 checksums. They are the Altitude SAMD21 Bootloader
+(https://github.com/Altitude-Unknown/Altitude-SAMD21-Bootloader), built from
+that repository: copy the four `.bin` files from its release and update the
+checksums in `boards.json`.
 
-The current USB VID/PID values in the bootloaders and the Arduino board package
-are lab placeholders. Replace them with assigned USB IDs before broad public
-distribution.
+USB IDs: RC transmitter 1209:A5C0, RC receiver 1209:A5C1, YELLOWSTONE
+1209:A5C2 (pid.codes, shared with the Arduino board package). BOREALIS still
+uses a lab placeholder: don't distribute BOREALIS boards until it has its own ID.
 
 To release, set `VERSION` in `samd_flasher/__init__.py`, update
 `RELEASE_NOTES.md`, and push a tag `v<VERSION>`. The workflow tests, builds,
