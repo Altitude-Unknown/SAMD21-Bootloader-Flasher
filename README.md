@@ -47,3 +47,8 @@ The images in `bootloaders/` are the
 contains no code from other projects. The RC transmitter, RC receiver and
 YELLOWSTONE use USB IDs from [pid.codes](https://pid.codes) (1209:A5C0, A5C1,
 A5C2); BOREALIS still uses a lab placeholder.
+
+## License
+
+MIT (see [LICENSE](LICENSE)). The bootloader images in `bootloaders/` are the
+[Altitude SAMD21 Bootloader](https://github.com/Altitude-Unknown/Altitude-SAMD21-Bootloader), also MIT.
