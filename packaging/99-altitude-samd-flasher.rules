@@ -1,0 +1,3 @@
+# Let logged-in users use Microchip (Atmel) debuggers such as the Atmel-ICE
+# without sudo, for the Altitude SAMD21 Bootloader Flasher.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="03eb", MODE="0660", GROUP="plugdev", TAG+="uaccess"

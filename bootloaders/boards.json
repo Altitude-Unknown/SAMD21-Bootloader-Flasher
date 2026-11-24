@@ -1,0 +1,48 @@
+{
+  "boards": [
+    {
+      "id": "rc_tx",
+      "name": "RC Airplane Transmitter",
+      "file": "bootloader-rc_tx-v1.0.0.bin",
+      "sha256": "bf34043fd7fb6e86ccc845faf8f3788638a7d2b1110766abeff88b29bb62f53a",
+      "version": "Altitude Bootloader 1.0.0",
+      "board_id": "SAMD21G18A-Altitude-RC-TX-M0-v0",
+      "usb_name": "RC Airplane TX M0",
+      "drive": "RCTXBOOT",
+      "usb_id": "1209:A5C0"
+    },
+    {
+      "id": "rc_rx",
+      "name": "RC Airplane Receiver",
+      "file": "bootloader-rc_rx-v1.0.0.bin",
+      "sha256": "f7b8e90829e00dc0c9db92fb4f9f8d9e40dc6254a0f145f0cf84aee947c0d8d2",
+      "version": "Altitude Bootloader 1.0.0",
+      "board_id": "SAMD21G18A-Altitude-RC-RX-M0-v0",
+      "usb_name": "RC Airplane RX M0",
+      "drive": "RCRXBOOT",
+      "usb_id": "1209:A5C1"
+    },
+    {
+      "id": "yellowstone",
+      "name": "YELLOWSTONE",
+      "file": "bootloader-yellowstone-v1.0.0.bin",
+      "sha256": "a86abd075103e6dea961f21bf35a3d0049a4eaa72503a249c488c4f33d0dac12",
+      "version": "Altitude Bootloader 1.0.0",
+      "board_id": "SAMD21G18A-Altitude-YELLOWSTONE-M0-v0",
+      "usb_name": "YELLOWSTONE M0",
+      "drive": "YSTONEBOOT",
+      "usb_id": "1209:A5C2"
+    },
+    {
+      "id": "borealis",
+      "name": "BOREALIS",
+      "file": "bootloader-borealis-v1.0.0.bin",
+      "sha256": "e302fcc89dd8acaafa0b5276022b496dbdfccb0ed585728a9a0abb1d1ffa0518",
+      "version": "Altitude Bootloader 1.0.0",
+      "board_id": "SAMD21G18A-Altitude-BOREALIS-M0-v0",
+      "usb_name": "BOREALIS M0",
+      "drive": "BOREALBOOT",
+      "usb_id": "03EB:2402 (lab placeholder)"
+    }
+  ]
+}
