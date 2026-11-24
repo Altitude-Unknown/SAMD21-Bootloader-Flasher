@@ -3,8 +3,8 @@
 This app flashes Altitude Unknown SAMD21 bootloaders onto custom
 ATSAMD21G18A-AU boards using an Atmel-ICE programmer over SWD.
 
-The released macOS and Windows apps include OpenOCD, so normal users do not
-need to install OpenOCD separately.
+The app talks to the Atmel-ICE directly: there is nothing else to install. It
+runs on macOS, Windows, and Raspberry Pi (64-bit Raspberry Pi OS).
 
 ## What This App Is For
 
@@ -53,29 +53,47 @@ https://github.com/Altitude-Unknown/SAMD21-Bootloader-Flasher/releases/latest
 
 Use:
 
-- `SAMD21BootloaderFlasher-macOS.zip` for macOS
-- `SAMD21BootloaderFlasher-Windows.zip` for Windows
+- `SAMD21BootloaderFlasher-macOS.zip` for macOS (Apple silicon: M1 or newer)
+- `SAMD21BootloaderFlasher-Windows.zip` for Windows 10 or 11
+- `SAMD21BootloaderFlasher-Raspberry-Pi-ARM64.zip` for a Raspberry Pi 4 or 5
 
-On macOS, unzip the app and move it to a normal folder such as Applications or
-Documents before running it. Running directly from Downloads can sometimes make
-macOS apply extra security restrictions.
+**macOS:** unzip the app and move it to Applications before opening it.
+
+**Windows:** unzip and run `SAMD21BootloaderFlasher.exe`. No driver is needed:
+Windows recognizes the Atmel-ICE on its own.
+
+**Raspberry Pi:** unzip, then in a terminal in that folder run `./install.sh`.
+It installs the app in the Programming menu and a USB rule so the Atmel-ICE
+can be used without `sudo` (it asks for your password once). Unplug and replug
+the Atmel-ICE afterwards.
 
 ## Flash A Bootloader
 
 1. Connect the Atmel-ICE to the computer by USB.
 2. Connect the Atmel-ICE SWD cable to the target board.
 3. Power the target board.
-4. Open the SAMD21 Bootloader Flasher app.
-5. Choose the correct board from the Board menu.
-6. Click `Use Built-In`.
-7. Leave `Verify` checked.
-8. Leave `Protect 8 KB bootloader` checked for normal use.
-9. Click `Flash Bootloader`.
-10. Confirm that the correct board is connected.
-11. Wait for `Flash complete`.
+4. Open the SAMD21 Bootloader Flasher app. Step 1, **Programmer**, should say
+   the Atmel-ICE is connected. If not, press **Refresh**.
+5. In step 2, **Board**, choose the board.
+6. Optional: press **Check Board**. The app reads the chip and tells you what
+   it is (for example `SAMD21G18A, rev D`), which bootloader is already on it
+   (or that it is empty), and whether the bootloader is protected.
+7. In step 3, **Install**, leave **Protect the bootloader** checked for normal
+   use, and press **Install Bootloader**.
+8. Confirm that the correct board is connected.
+9. Wait for the message that the bootloader is installed and verified.
 
-The app writes the bootloader at flash address `0x00000000`, verifies it, then
-sets the SAMD21 bootloader protection area to 8 KB.
+The app writes the bootloader at flash address `0x00000000`, reads it back to
+verify every byte, protects the bootloader area (8 KB) so a sketch can't
+overwrite it, and restarts the board. If the board already had a protected
+bootloader, the app turns the protection off first, then back on. The rest of
+the flash (any sketch after the bootloader) is not touched.
+
+**Other file…** at the bottom of the Board list flashes any `.bin` or `.hex`
+bootloader file. Use it only for testing new bootloaders.
+
+**Save Details…** saves the messages from the last check or install, which
+helps when asking for help.
 
 ## Check That The Bootloader Worked
 
@@ -199,22 +217,40 @@ mode, then try uploading again.
 
 ## Troubleshooting
 
-### The flasher cannot connect to the target
+### No programmer found
+
+- Check the Atmel-ICE's USB cable (try another port or cable).
+- Close any other program that uses the Atmel-ICE (Microchip Studio, MPLAB X,
+  OpenOCD), then press **Refresh**.
+- Raspberry Pi: if the app says it has no permission, run `./install.sh` from
+  the download again, then unplug and replug the Atmel-ICE.
+
+### The programmer cannot reach the chip
 
 Check:
 
 - Target board is powered
-- Atmel-ICE USB cable is connected
+- The SWD cable is on the right header, the right way round
 - SWDIO and SWCLK are not swapped
 - RESET is connected
 - GND is connected
 - VTG / voltage reference is connected to the target's 3.3 V rail
 
-### The app says flashing failed but verify passed
+If a sketch on the board has turned off the debug pins or put the chip to
+sleep, the app holds the chip in reset while it connects. That needs the RESET
+wire.
 
-If programming and verify completed but reset failed, the bootloader may still
-be written correctly. Disconnect and reconnect the board, then double-tap reset
-to check for the bootloader drive.
+### The chip's security bit is set
+
+A chip with its security bit set can't be read or programmed until it is
+completely erased. The app asks before it does that, because the erase also
+deletes the sketch on the board.
+
+### Verify failed
+
+The bytes read back from the chip don't match the bootloader. Flash again. If
+it keeps failing, check the board's power supply and the SWD wiring, which
+should be short.
 
 ### Arduino IDE still shows an Adafruit board name
 
@@ -253,23 +289,38 @@ and `programmers.txt`.
 
 ## Notes For Maintainers
 
-The release workflow bundles OpenOCD into the packaged app before PyInstaller
-runs. The app looks for OpenOCD at:
+The app does not use OpenOCD or any other programming tool. Everything
+between the app and the chip is in `samd_flasher/`, written for this project
+with only the Python standard library:
 
-```text
-tools/openocd/bin/openocd
+- `hid/`: USB HID access for macOS (IOKit), Windows (hid.dll), and Linux
+  (`/dev/hidraw`)
+- `dap.py`: the CMSIS-DAP commands the Atmel-ICE understands
+- `swd.py`: Arm SWD debug port and memory access
+- `samd21.py`: the SAMD21 chip: identify it, halt it, and program its flash
+  through the NVM controller, including the BOOTPROT fuse
+- `jobs.py`: the steps the window and the command line run
+
+The same steps run from a terminal, which helps with lab setup and testing:
+
+```sh
+python3 bootloader_flasher.py list
+python3 bootloader_flasher.py check
+python3 bootloader_flasher.py flash rc_tx
+python3 bootloader_flasher.py read backup.bin
 ```
 
-or on Windows:
+`tests/` runs the whole flashing process against a simulated Atmel-ICE and
+SAMD21: `python3 -m unittest discover -s tests`.
 
-```text
-tools/openocd/bin/openocd.exe
-```
+The bootloader images are in `bootloaders/`, listed in `bootloaders/boards.json`
+with SHA-256 checksums. They are built from the MIT-licensed uf2-samdx1 source;
+keep its license and notices (in `bootloaders/`) with them when sharing.
 
-When bundled OpenOCD is present, the app also points OpenOCD at the bundled
-config scripts so commands like `interface/cmsis-dap.cfg` and
-`target/at91samdXX.cfg` work without a separate OpenOCD install.
-
-The current USB VID/PID values in the Arduino board package are lab
-placeholders. Replace them with assigned USB IDs before broad public
+The current USB VID/PID values in the bootloaders and the Arduino board package
+are lab placeholders. Replace them with assigned USB IDs before broad public
 distribution.
+
+To release, set `VERSION` in `samd_flasher/__init__.py`, update
+`RELEASE_NOTES.md`, and push a tag `v<VERSION>`. The workflow tests, builds,
+self-tests, signs, and publishes the three apps.

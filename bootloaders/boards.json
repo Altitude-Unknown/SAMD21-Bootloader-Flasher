@@ -1,0 +1,44 @@
+{
+  "boards": [
+    {
+      "id": "rc_tx",
+      "name": "RC Airplane Transmitter",
+      "file": "bootloader-altitude_rc_tx_m0-v4.0.0.bin",
+      "sha256": "17f15c7b574f1c91897eeddb47a3faa25fccbfae31c676f8623830194182a5d0",
+      "version": "UF2 Bootloader v4.0.0",
+      "board_id": "SAMD21G18A-Altitude-RC-TX-M0-v0",
+      "usb_name": "RC Airplane TX M0",
+      "drive": "RCTXBOOT"
+    },
+    {
+      "id": "rc_rx",
+      "name": "RC Airplane Receiver",
+      "file": "bootloader-altitude_rc_rx_m0-v4.0.0.bin",
+      "sha256": "bab6d8d31778a7cbdcb409042c1ff2d4b789663416d357b6dcd35a2667b945ba",
+      "version": "UF2 Bootloader v4.0.0",
+      "board_id": "SAMD21G18A-Altitude-RC-RX-M0-v0",
+      "usb_name": "RC Airplane RX M0",
+      "drive": "RCRXBOOT"
+    },
+    {
+      "id": "yellowstone",
+      "name": "YELLOWSTONE",
+      "file": "bootloader-altitude_yellowstone_m0-v4.0.0.bin",
+      "sha256": "19ae222d5b2ad2de693f2f762a6575003a18d443efee1701f6638f0acff46825",
+      "version": "UF2 Bootloader v4.0.0",
+      "board_id": "SAMD21G18A-Altitude-YELLOWSTONE-M0-v0",
+      "usb_name": "YELLOWSTONE M0",
+      "drive": "YSTONEBOOT"
+    },
+    {
+      "id": "borealis",
+      "name": "BOREALIS",
+      "file": "bootloader-altitude_borealis_m0-v4.0.0.bin",
+      "sha256": "3bab342a091bac9eb4e6b5e8e312b6a042471a02f2049e3f4526cf7b3cd22080",
+      "version": "UF2 Bootloader v4.0.0",
+      "board_id": "SAMD21G18A-Altitude-BOREALIS-M0-v0",
+      "usb_name": "BOREALIS M0",
+      "drive": "BOREALBOOT"
+    }
+  ]
+}

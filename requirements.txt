@@ -1,1 +1,4 @@
-# Tkinter ships with the normal python.org macOS/Windows Python installers.
+# The app has no runtime dependencies: it uses only the Python standard library
+# (Tkinter ships with the python.org installers for macOS and Windows; on
+# Raspberry Pi OS install python3-tk). Release builds also need:
+#   pip install pyinstaller
